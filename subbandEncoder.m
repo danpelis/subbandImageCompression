@@ -1,8 +1,11 @@
 %If png must read and show as [img, cmap]
 close all;
 img = imread('dennis.jpg');
+decLevels = 1;
+quantLevels = 20;
+wavename = 'haar';
 %[c,s] = wavedec2(img,2,'sym4');
-[cA,cH,cV,cD] = dwt2(img,'sym4');
+[cA,cH,cV,cD] = dwt2(img,wavename);
 
 figure;
 subplot(2,2,1);
@@ -25,28 +28,28 @@ imshow(cD);
 axis off
 title('cD')
 
-levels = 2;
-thresh = multithresh(img,levels);
+
+thresh = multithresh(img,quantLevels);
 value = [0 thresh(2:end) 255]; 
 seg_img = imquantize(img, thresh, value);
 
-%threshCMap = multithresh(cmap, levels);
+%threshCMap = multithresh(cmap, quantLevels);
 %valueCMap = [0 threshCMap(2:end) 255]; 
 %seg_cmap = imquantize(cmap, thresh, valueCMap);
 
-threshCA = multithresh(cA,levels);
+threshCA = multithresh(cA,quantLevels);
 valueCA = [min(min(min(cA))) threshCA(2:end) max(max(max(cA)))];
 seg_CA = imquantize(cA,threshCA, valueCA);
 
-threshCH = multithresh(cH,levels);
+threshCH = multithresh(cH,quantLevels);
 valueCH = [min(min(min(cH))) threshCH(2:end) max(max(max(cH)))];
 seg_CH = imquantize(cH,threshCH, valueCH);
 
-threshCV = multithresh(cV,levels);
+threshCV = multithresh(cV,quantLevels);
 valueCV = [min(min(min(cV))) threshCV(2:end) max(max(max(cV)))];
 seg_CV = imquantize(cV,threshCV, valueCV);
 
-threshCD = multithresh(cD,levels);
+threshCD = multithresh(cD,quantLevels);
 valueCD = [min(min(min(cD))) threshCD(2:end) max(max(max(cD)))];
 seg_CD = imquantize(cD,threshCD, valueCD);
 	 

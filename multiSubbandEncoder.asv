@@ -1,23 +1,52 @@
 %If png must read and show as [img, cmap]
+clear;
 close all;
-img = imread('dennis.jpg');
-decLevels = 1;
-quantLevels = 2;
-wavename = 'haar'
-%[c,s] = wavedec2(img,2,'sym4');
-[cA,cH,cV,cD] = dwt2(img,wavename);
-[cAA,cAH,cAV,cAD] = dwt2(cA,wavename); 
+img = imread('patern_test.jpg');
+imshow(img)
+waveLevel = 5;
 
-Level2=[cAA,cAH; cAV,cAD]; %contacinat
-imshow([Level2,cH; cV,cD],'Colormap',gray); %2 level
-%{
-if decLevels > 1
-    for level = 1:decLevels
-        
-    end
+[c,s] = wavedec2(img, waveLevel, 'sym4');
+
+
+V{1,10} = []; % cell(2019,1515,3)
+D{1,10} = []; %cell(1,10);
+H{1,10} = [];
+A{1,10} = [];
+Vimg{1,10} = [];
+Himg{1,10} = [];
+Dimg{1,10} = [];
+Aimg{1,10} = [];
+
+[H1,V1,D1] = detcoef2('all',c,s,1);
+V1img = wcodemat(V1,255,'mat',1);
+for level = 1:waveLevel
+    %[H, V, D] = detcoef2('all',c,s,level);
+    D{1,level} = num2cell(detcoef2('D',c,s,level));
+    V{1,level} = num2cell(detcoef2('V',c,s,level));
+    H{1,level} = num2cell(detcoef2('H',c,s,level));
+    A{1,level} = num2cell(appcoef2(c,s,'sym4',(level)));
+    
+    Vimg{1, level} = num2cell(wcodemat(str2double(V{1,level}),255,'mat', level));
+    Himg{1, level} = num2cell(wcodemat(str2double(H{1,level}),255,'mat', level));
+    Dimg{1, level} = num2cell(wcodemat(str2double(D{1,level}),255,'mat', level));
+    Aimg{1, level} = num2cell(wcodemat(str2double(A{1,level}),255,'mat', level));
 end
-%}
 
+siz = s(size(s,1),:); 
+coeffs{1,}=
+for level = 1:waveLevel
+    %[H, V, D] = detcoef2('all',c,s,level);
+    reD = num2cell(upcoef2('D', D{1, level}, 'sym4', level, siz));
+    reV = num2cell(upcoef2('V', V{1, level}, 'sym4', level, siz));
+    reH = num2cell(upcoef2('H', H{1, level}, 'sym4', level, siz));
+    reA = num2cell(upcoef2('A', A{1, level}, 'sym4', level, siz));
+end
+
+
+imRe = waverec2(c,s,'sym4');
+
+
+return
 
 figure;
 subplot(2,2,1);
@@ -40,28 +69,28 @@ imshow(cD);
 axis off
 title('cD')
 
-
-thresh = multithresh(img,quantLevels);
+levels = 2;
+thresh = multithresh(img,levels);
 value = [0 thresh(2:end) 255]; 
 seg_img = imquantize(img, thresh, value);
 
-%threshCMap = multithresh(cmap, quantLevels);
+%threshCMap = multithresh(cmap, levels);
 %valueCMap = [0 threshCMap(2:end) 255]; 
 %seg_cmap = imquantize(cmap, thresh, valueCMap);
 
-threshCA = multithresh(cA,quantLevels);
+threshCA = multithresh(cA,levels);
 valueCA = [min(min(min(cA))) threshCA(2:end) max(max(max(cA)))];
 seg_CA = imquantize(cA,threshCA, valueCA);
 
-threshCH = multithresh(cH,quantLevels);
+threshCH = multithresh(cH,levels);
 valueCH = [min(min(min(cH))) threshCH(2:end) max(max(max(cH)))];
 seg_CH = imquantize(cH,threshCH, valueCH);
 
-threshCV = multithresh(cV,quantLevels);
+threshCV = multithresh(cV,levels);
 valueCV = [min(min(min(cV))) threshCV(2:end) max(max(max(cV)))];
 seg_CV = imquantize(cV,threshCV, valueCV);
 
-threshCD = multithresh(cD,quantLevels);
+threshCD = multithresh(cD,levels);
 valueCD = [min(min(min(cD))) threshCD(2:end) max(max(max(cD)))];
 seg_CD = imquantize(cD,threshCD, valueCD);
 	 
@@ -109,4 +138,3 @@ imshow(uint8(Y));
 axis off
 title('Non-Quantized Image')
 %title('2 levels');
-
