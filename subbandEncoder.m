@@ -9,7 +9,7 @@ img = imread('dennis.jpg');
 % Declares the two input vaiables. The Quantization step size and 
 % the chosen Wavelet
 quantLevels = str2double(input("Please Enter Amount Quantization Levels (1-20): ",'s'));
-wavename = input("Enter Desired Wavlet(haar, dbN, biorN.M, symN, coifN): ",'s');
+wavename = input("Enter Desired Wavelet(haar, dbN, biorN.M, symN, coifN): ",'s');
 
 
 % Wavelet Deompositon
